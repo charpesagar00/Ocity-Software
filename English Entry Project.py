@@ -43,7 +43,7 @@ def get_expiry_date():
 # To Get Listed on GitHub Server
 import socket , getpass, uuid , json
 from github import Github
-TOKEN = "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"
+TOKEN = "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"
 REPO_NAME = "charpesagar00/Ocity-Software"
 
 rec_email1 = None
@@ -87,23 +87,22 @@ def relogin_after_expiry():
 
         if rec_email1.endswith("@gmail.com"):
             OTP = ""
-            for i in range(2):
+            for i in range(8):
                 num = random.choice(sym)
                 OTP = OTP + str(num)
-            print(OTP)
-                
-            # server = smtplib.SMTP("SMTP.gmail.com",587)
-            # server.starttls()
+            
+            server = smtplib.SMTP("SMTP.gmail.com",587)
+            server.starttls()
 
-            # m = f'''SUBJECT : Your OTP\n\n
-            # Your One Time Password (OTP) is : {OTP}
-            # Enjoy!
-            # User : {rec_email1}
-            # '''
+            m = f'''SUBJECT : Your OTP\n\n
+            Your One Time Password (OTP) is : {OTP}
+            Enjoy!
+            User : {rec_email1}
+            '''
 
-            # server.login(email1,"jqpe uqif xbzv fpqj")
-            # server.sendmail(email1,email1,m)
-            # server.close()
+            server.login(email1,"jqpe uqif xbzv fpqj")
+            server.sendmail(email1,email1,m)
+            server.close()
             x.grid(row=2,column=0,padx=(35,0),sticky="w")
             get_otp.grid(row=2,column=1,sticky="w",pady=5)
             
@@ -111,7 +110,7 @@ def relogin_after_expiry():
             z.grid(row=3,column=0,columnspan=2,pady=15)
             
         elif rec_email1 == "":
-            msg.showwarning("Error","This field must be fill.")
+            msg.showwarning("Error","Please insert your valid email address.")
 
         else:
             msg.showwarning("Error","Please recheck your email.")
@@ -144,24 +143,24 @@ def relogin_after_expiry():
     my = CTk()
     my.config(bg="#333333")
     my.title("Login First")
-    my.geometry("340x420")
+    my.geometry("420x460")
 
-    qr = Image.open(os.path.join(home,"Desktop","OR.jpg"))
+    qr = Image.open(os.path.join(home,"Desktop","pay_qr.jpeg"))
     my_image = CTkImage(light_image=qr,
                         dark_image=qr,
-                        size=(270, 250),) 
-    CTkLabel(my, image=my_image, text="").grid(row=0,column=0,columnspan=2,padx=35,pady=20)
+                        size=(300, 290)) 
+    CTkLabel(my, image=my_image, text="").grid(row=0,column=0,columnspan=2,padx=60,pady=20,sticky="we")
     CTkLabel(my,text="Email",text_color="#ffffff",bg_color="#333333",font=("Calibri", 18)).grid(row=1,column=0,padx=(35,0),sticky="w")
-    get = CTkEntry(my,font=("Calibri", 18),fg_color="#333333",bg_color="#333333",text_color="#ffffff",width=200)
+    get = CTkEntry(my,font=("Calibri", 18),fg_color="#333333",bg_color="#333333",text_color="#ffffff",width=280)
     get.grid(row=1,column=1,sticky="w")
 
     x = CTkLabel(my,text="OTP",text_color="#ffffff",bg_color="#333333",font=("Calibri", 18))
     get_otp = CTkEntry(my,font=("Calibri", 18),fg_color="#333333",bg_color="#333333",text_color="#ffffff",width=200)
    
-    y = CTkButton(my,text="Get OTP",font=("Calibri", 18,"bold"),command=get_pay_email,bg_color="#333333",corner_radius=5)
+    y = CTkButton(my,text="Get OTP",font=("Calibri", 20,"bold"),command=get_pay_email,bg_color="#333333",corner_radius=5)
     y.grid(row=3,column=0,columnspan=2,pady=15)
 
-    z = CTkButton(my,text="Submit",font=("Calibri", 18,"bold"),command=get_pay_otp,bg_color="#333333",corner_radius=5)
+    z = CTkButton(my,text="Submit",font=("Calibri", 20,"bold"),command=get_pay_otp,bg_color="#333333",corner_radius=5)
 
     def on_closing1():
         sys.exit()
@@ -303,7 +302,7 @@ if not os.path.exists("login_creadentials.txt"):
 # Version Checker System
 if not os.path.exists("version.json"):
     with open("version.json", "w") as file:
-        json.dump({"current_version": "0.0"}, file)
+        json.dump({"current_version": "0.0"}, file) # <<<------------------ SET VERSION HERE...
 
 import urllib.request
 with open("version.json", "r") as file:
@@ -311,21 +310,21 @@ with open("version.json", "r") as file:
     current_version = local_data.get("current_version")
 
 try:
-    response = requests.get("https://raw.githubusercontent.com/charpesagar00/Ocity-Software/refs/heads/main/Latest%20Version.json")
+    headers = {"Authorization" : f"token {TOKEN}"}
+    response = requests.get("https://raw.githubusercontent.com/charpesagar00/Ocity-Software/refs/heads/main/Latest%20Version.json?",headers=headers)
     data = response.json()
 except requests.exceptions.RequestException as e:
     print(f"Network error checking for updates: {e}")
 except Exception as e:
     print(f"An unexpected error occurred during update: {e}")
 
-
 latest_version = data["version"]
 download_url = data["download_url"]
-
 print(latest_version)
 print(download_url)
 
 if latest_version > current_version:
+
     choice = msg.askyesno("Update Available!", f"A new version ({latest_version}) is available! Would you like to download it now?")
     if choice == True:
         if download_url != "":
@@ -460,10 +459,8 @@ def turn_on_filter():
                 edit_button = CTkButton(dashboard_frame,text="⋮",hover_color="#95FEE0",width=1,font=("Calibri",20),text_color="#333333",fg_color="#cefdfd",corner_radius=90,bg_color="#ecffff",command=lambda temp=i:edit_enquiry_function(temp))
                 edit_button.grid(row=3+i,column=len(selected_filters),pady=3)
                 button_lables.append(edit_button)
-
     except:
         pass
-
 
 
 default_checked = ["Sr.No","Gender","Name","Course","Source","Mobile No.","Date","Time"]
